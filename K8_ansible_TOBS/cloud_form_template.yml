@@ -1,0 +1,227 @@
+Parameters:
+  NameOfService:
+    Description: The tag name associated with this EC2 instances.
+    Type: String
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access into the server
+    Type: AWS::EC2::KeyPair::KeyName
+  InstanceAZ:
+   Description: EC2 AZ.
+   Type: AWS::EC2::AvailabilityZone::Name
+   ConstraintDescription: "Must be the name of an availabity zone."
+Mappings:
+  RegionMap:
+    us-east-1:
+      AMI: ami-06cf02a98a61f9f5e
+Resources:
+  LnEc2InstanceK8node1:
+    Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          commands:
+            mkfs:
+              command: mkfs.ext4 /dev/xvdf
+            mkdir:
+              command: mkdir /data
+            fstab:
+              command: echo "/dev/xvdf /data ext4 defaults 0 2" >> /etc/fstab
+            mount:
+              command: mount -a
+    Properties:
+      BlockDeviceMappings:
+        # Create a separate volume
+        - DeviceName: /dev/sdf
+          Ebs:
+            DeleteOnTermination: false
+            VolumeSize: 15
+      UserData:
+        Fn::Base64: !Sub |
+         #!/usr/bin/env bash
+         yum install -y epel-release
+         yum install -y https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.amzn1.noarch.rpm
+         ln -s /usr/local/lib/python2.7/site-packages/cfnbootstrap /usr/lib/python2.7/site-packages/cfnbootstrap
+         /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LnEc2InstanceK8node1 --region ${AWS::Region}
+         /opt/aws/bin/cfn-signal --exit-code $? --stack ${AWS::StackName} --resource LnEc2InstanceK8node1 --region ${AWS::Region}
+         yum install -y firewalld
+      InstanceType: t2.small
+      AvailabilityZone: !Ref InstanceAZ
+      ImageId:
+        Fn::FindInMap:
+        - RegionMap
+        - !Ref AWS::Region
+        - AMI
+      Tags:
+        - Key: Name
+          Value: !Join [ '-', [ !Ref NameOfService, 'K8-node' ,'1'] ]
+      SecurityGroups:
+        - !Ref LnSecurityGroup
+      KeyName: !Ref KeyName
+  LnEc2InstanceK8node2:
+    Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          commands:
+            mkfs:
+              command: mkfs.ext4 /dev/xvdf
+            mkdir:
+              command: mkdir /data
+            fstab:
+              command: echo "/dev/xvdf /data ext4 defaults 0 2" >> /etc/fstab
+            mount:
+              command: mount -a
+    Properties:
+      BlockDeviceMappings:
+        # Create a separate volume
+        - DeviceName: /dev/sdf
+          Ebs:
+            DeleteOnTermination: false
+            VolumeSize: 15
+      UserData:
+        Fn::Base64: !Sub |
+         #!/usr/bin/env bash
+         yum install -y epel-release
+         yum install -y https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.amzn1.noarch.rpm
+         ln -s /usr/local/lib/python2.7/site-packages/cfnbootstrap /usr/lib/python2.7/site-packages/cfnbootstrap
+         /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LnEc2InstanceK8node2 --region ${AWS::Region}
+         /opt/aws/bin/cfn-signal --exit-code $? --stack ${AWS::StackName} --resource LnEc2InstanceK8node2 --region ${AWS::Region}
+         yum install -y firewalld
+      InstanceType: t2.small
+      AvailabilityZone: !Ref InstanceAZ
+      ImageId:
+        Fn::FindInMap:
+        - RegionMap
+        - !Ref AWS::Region
+        - AMI
+      Tags:
+        - Key: Name
+          Value: !Join [ '-', [ !Ref NameOfService, 'K8-node' ,'2'] ]
+      SecurityGroups:
+        - !Ref LnSecurityGroup
+      KeyName: !Ref KeyName
+  LnEc2InstanceK8node3:
+    Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          commands:
+            mkfs:
+              command: mkfs.ext4 /dev/xvdf
+            mkdir:
+              command: mkdir /data
+            fstab:
+              command: echo "/dev/xvdf /data ext4 defaults 0 2" >> /etc/fstab
+            mount:
+              command: mount -a
+    Properties:
+      BlockDeviceMappings:
+        # Create a separate volume
+        - DeviceName: /dev/sdf
+          Ebs:
+            DeleteOnTermination: false
+            VolumeSize: 15
+      UserData:
+        Fn::Base64: !Sub |
+         #!/usr/bin/env bash
+         yum install -y epel-release
+         yum install -y https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.amzn1.noarch.rpm
+         ln -s /usr/local/lib/python2.7/site-packages/cfnbootstrap /usr/lib/python2.7/site-packages/cfnbootstrap
+         /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LnEc2InstanceK8node3 --region ${AWS::Region}
+         /opt/aws/bin/cfn-signal --exit-code $? --stack ${AWS::StackName} --resource LnEc2InstanceK8node3 --region ${AWS::Region}
+         yum install -y firewalld
+      InstanceType: t2.small
+      AvailabilityZone: !Ref InstanceAZ
+      ImageId:
+        Fn::FindInMap:
+        - RegionMap
+        - !Ref AWS::Region
+        - AMI
+      Tags:
+        - Key: Name
+          Value: !Join [ '-', [ !Ref NameOfService, 'K8-node' ,'3'] ]
+      SecurityGroups:
+        - !Ref LnSecurityGroup
+      KeyName: !Ref KeyName
+
+  LnEc2Instanceansible:
+    Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          commands:
+            mkfs:
+              command: mkdir plop
+    Properties:
+      UserData:
+        Fn::Base64: !Sub |
+         #!/usr/bin/env bash
+         yum install -y epel-release
+         yum install -y https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.amzn1.noarch.rpm
+         ln -s /usr/local/lib/python2.7/site-packages/cfnbootstrap /usr/lib/python2.7/site-packages/cfnbootstrap
+         /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LnEc2Instanceansible --region ${AWS::Region}
+         /opt/aws/bin/cfn-signal --exit-code $? --stack ${AWS::StackName} --resource LnEc2Instanceansible --region ${AWS::Region}
+         yum install -y ansible
+         yum install -y python3-jmespath
+         yum install -y git
+         yum install -y wget
+      InstanceType: t2.small
+      AvailabilityZone: !Ref InstanceAZ
+      ImageId:
+        Fn::FindInMap:
+        - RegionMap
+        - !Ref AWS::Region
+        - AMI
+      Tags:
+        - Key: Name
+          Value: !Join [ '-', [ !Ref NameOfService, 'ansible'] ]
+      SecurityGroups:
+        - !Ref LnSecurityGroup
+      KeyName: !Ref KeyName
+
+  LnSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow all ports. Created using CloudFormation template.
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 0
+        ToPort: 9999
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: udp
+        FromPort: 0
+        ToPort: 9999
+        CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: ansible-sg
+        - Key: Description
+          Value: Security Group created to allow everything for testing
+  LnK8Ip1:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref LnEc2InstanceK8node1
+  LnK8Ip2:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref LnEc2InstanceK8node2
+  LnK8Ip3:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref LnEc2InstanceK8node3
+Outputs:
+  LnPublicIpAddressInstance1:
+    Description: The Public IP address for EC2 instances
+    Value: !GetAtt
+      - LnEc2InstanceK8node1
+      - PublicIp
+  LnPublicIpAddressInstance2:
+    Description: The Public IP address for EC2 instances
+    Value: !GetAtt
+      - LnEc2InstanceK8node2
+      - PublicIp
+  LnPublicIpAddressInstance3:
+    Description: The Public IP address for EC2 instances
+    Value: !GetAtt
+      - LnEc2InstanceK8node3
+      - PublicIp

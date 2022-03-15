@@ -1,0 +1,7 @@
+---
+- name: install dependencies on all nodes
+  include_tasks: all.yml
+
+- name: install dependencies on master nodes
+  include_tasks: master.yml
+  when: inventory_hostname in groups.master
