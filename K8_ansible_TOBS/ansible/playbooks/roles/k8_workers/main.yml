@@ -1,7 +1,7 @@
 ---
 - name: Adding workers
   include_tasks: workers.yml
-    when: inventory_hostname in groups.workers
+  when: inventory_hostname in groups.workers
 
 - name: Adding workers
   include_tasks: master.yml
