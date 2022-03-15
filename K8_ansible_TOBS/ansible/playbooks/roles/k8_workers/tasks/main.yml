@@ -5,4 +5,4 @@
 
 - name: Adding workers
   include_tasks: master.yml
-  when: inventory_hostname in groups.master
+  when: inventory_hostname in groups.masters

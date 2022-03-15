@@ -4,4 +4,4 @@
 
 - name: install dependencies on master nodes
   include_tasks: master.yml
-  when: inventory_hostname in groups.master
+  when: inventory_hostname in groups.masters
