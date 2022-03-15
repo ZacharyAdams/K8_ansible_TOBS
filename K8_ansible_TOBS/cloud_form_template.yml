@@ -44,7 +44,7 @@ Resources:
          /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LnEc2InstanceK8node1 --region ${AWS::Region}
          /opt/aws/bin/cfn-signal --exit-code $? --stack ${AWS::StackName} --resource LnEc2InstanceK8node1 --region ${AWS::Region}
          yum install -y firewalld
-      InstanceType: t2.small
+      InstanceType: t2.medium
       AvailabilityZone: !Ref InstanceAZ
       ImageId:
         Fn::FindInMap:
@@ -87,7 +87,7 @@ Resources:
          /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LnEc2InstanceK8node2 --region ${AWS::Region}
          /opt/aws/bin/cfn-signal --exit-code $? --stack ${AWS::StackName} --resource LnEc2InstanceK8node2 --region ${AWS::Region}
          yum install -y firewalld
-      InstanceType: t2.small
+      InstanceType: t2.medium
       AvailabilityZone: !Ref InstanceAZ
       ImageId:
         Fn::FindInMap:
@@ -130,7 +130,7 @@ Resources:
          /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LnEc2InstanceK8node3 --region ${AWS::Region}
          /opt/aws/bin/cfn-signal --exit-code $? --stack ${AWS::StackName} --resource LnEc2InstanceK8node3 --region ${AWS::Region}
          yum install -y firewalld
-      InstanceType: t2.small
+      InstanceType: t2.medium
       AvailabilityZone: !Ref InstanceAZ
       ImageId:
         Fn::FindInMap:
@@ -140,41 +140,6 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join [ '-', [ !Ref NameOfService, 'K8-node' ,'3'] ]
-      SecurityGroups:
-        - !Ref LnSecurityGroup
-      KeyName: !Ref KeyName
-
-  LnEc2Instanceansible:
-    Type: AWS::EC2::Instance
-    Metadata:
-      AWS::CloudFormation::Init:
-        config:
-          commands:
-            mkfs:
-              command: mkdir plop
-    Properties:
-      UserData:
-        Fn::Base64: !Sub |
-         #!/usr/bin/env bash
-         yum install -y epel-release
-         yum install -y https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.amzn1.noarch.rpm
-         ln -s /usr/local/lib/python2.7/site-packages/cfnbootstrap /usr/lib/python2.7/site-packages/cfnbootstrap
-         /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LnEc2Instanceansible --region ${AWS::Region}
-         /opt/aws/bin/cfn-signal --exit-code $? --stack ${AWS::StackName} --resource LnEc2Instanceansible --region ${AWS::Region}
-         yum install -y ansible
-         yum install -y python3-jmespath
-         yum install -y git
-         yum install -y wget
-      InstanceType: t2.small
-      AvailabilityZone: !Ref InstanceAZ
-      ImageId:
-        Fn::FindInMap:
-        - RegionMap
-        - !Ref AWS::Region
-        - AMI
-      Tags:
-        - Key: Name
-          Value: !Join [ '-', [ !Ref NameOfService, 'ansible'] ]
       SecurityGroups:
         - !Ref LnSecurityGroup
       KeyName: !Ref KeyName
@@ -194,7 +159,7 @@ Resources:
         CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
-          Value: ansible-sg
+          Value: k8-sg
         - Key: Description
           Value: Security Group created to allow everything for testing
   LnK8Ip1:
