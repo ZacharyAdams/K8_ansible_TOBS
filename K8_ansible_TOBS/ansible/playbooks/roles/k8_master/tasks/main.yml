@@ -20,6 +20,11 @@
     remote_src: yes
     owner: centos
 
+- name: set perms
+  become: yes
+  become_user: centos
+  shell: sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
 - name: install Pod network
   become: yes
   become_user: centos
