@@ -30,3 +30,9 @@ kubectl get secret --namespace grafana grafana -o jsonpath="{.data.admin-passwor
 kubectl get service -n grafana
 
 kubectl apply -f deployment.yml
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.44.0/deploy/static/provider/cloud/deploy.yaml
+
+kubectl create deployment nginx --image=nginx
+
+kubectl create service nodeport nginx --tcp=88:88
